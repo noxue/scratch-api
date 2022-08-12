@@ -17,7 +17,7 @@ Base = declarative_base(engine)
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, autoincrement=True, primary_key=True)
-    name = Column(String(50), unique=True)
+    username = Column(String(50), unique=True)
     password = Column(String(50))
     create_time = Column(DateTime, default=datetime.now)
 
@@ -35,4 +35,4 @@ tables = [User.__table__, Project.__table__]
 
 
 # Base.metadata.drop_all(tables=tables)
-# Base.metadata.create_all(tables=tables)
+Base.metadata.create_all(tables=tables)

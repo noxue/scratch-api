@@ -5,7 +5,7 @@ def get_logger():
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
     ch = logging.StreamHandler()
-    fh = logging.handlers.RotatingFileHandler("api.log",mode="a",maxBytes = 100*1024, backupCount = 3)
+    fh = logging.FileHandler("api.log")
     formatter = logging.Formatter(
         "%(asctime)s - %(module)s - %(funcName)s - line:%(lineno)d - %(levelname)s - %(message)s"
     )
@@ -16,3 +16,5 @@ def get_logger():
     logger.addHandler(fh) #将日志输出至文件
     
     return logger
+
+log = get_logger()

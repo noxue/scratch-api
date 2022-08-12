@@ -1,8 +1,3 @@
-import logging
-from enum import unique
-import hashlib
-import json
-from sys import prefix
 from fastapi import FastAPI, File, UploadFile, Request, Response, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -13,7 +8,9 @@ from api import user
 # session.add(item)
 # session.commit()
 
-app = FastAPI(prefix="/api")
+app = FastAPI()
+
+app.include_router(prefix='/api', router=user.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -22,8 +19,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.include_router(prefix="/users", router=user.router)
 
 projectBase = './projects/'
 
