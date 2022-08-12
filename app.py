@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile, Request, Response, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from models.models import User, Project, session
-from api import user
+from api import user, scratch
 
 # item = User(**{'name':'noxue', 'password':'123456'})
 # session.add(item)
@@ -11,6 +11,7 @@ from api import user
 app = FastAPI()
 
 app.include_router(prefix='/api', router=user.router)
+app.include_router(prefix="/api/scratch", router=scratch.project.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,38 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-projectBase = './projects/'
-
-
-@app.get("/{id}")
-async def get(id: int, response: Response):
-    # 读取projects目录下的json文件
-    f = open("{}{}.json".format(projectBase, id), 'rb')
-    return StreamingResponse(f, media_type='application/octet-stream')
-
-
-id = 1
-
-
-@app.post("/")
-async def create(req: Request, title: str = Query()):
-    global id
-    print(title)
-    with open("{}{}.json".format(projectBase, id), 'wb') as f:
-        # 写入文件
-        f.write(await req.body())
-    id += 1
-    return {"status": 'ok', "content-name": "{}".format(id-1)}
-
-
-@app.put("/{id}")
-async def update(id: int, req: Request, title: str = Query()):
-    print(title)
-    with open("{}{}.json".format(projectBase, id), 'wb') as f:
-        # 写入文件
-        f.write(await req.body())
-    return {"status": "ok", "autosave-interval": "2"}
 
 basePath = "./static/"
 
