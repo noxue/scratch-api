@@ -1,6 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, Request, Response, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse
 from models.models import User, Project, session
 from api import user, scratch
 
@@ -15,7 +15,7 @@ app.include_router(prefix="/api/scratch", router=scratch.project.router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8601"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,21 +37,22 @@ async def create_asset(name: str, req: Request):
 @app.get('/assets/internalapi/asset/{name}/get')
 async def get_asset(name: str):
     # 读取文件
-    f = open(basePath + name, 'rb')
-    return StreamingResponse(f, media_type='application/octet-stream')
+    return FileResponse(basePath + name, media_type='application/octet-stream')
 
 thumbnailBase = "./thumbnails/"
 
-# 封面
 
-
-@app.put('/thumbnail/{id}')
+@app.put('/thumbnail/{id}')  # 封面图片上传
 async def update_thumbnail(id: int, req: Request):
     with open(thumbnailBase + '{}.png'.format(id), 'wb') as f:
         # 写入文件
         f.write(await req.body())
     return {"status": 'ok', "content-name": '{}.png'.format(id)}
 
+
+@app.get('/thumbnail/{id}')
+async def get_thumbnail(id: int):
+    return FileResponse(thumbnailBase + '{}.png'.format(id), media_type='image/png')
 
 # backpack
 backpackBase = "./backpack/"

@@ -36,4 +36,4 @@ tables = [User.__table__, Project.__table__]
 
 
 # Base.metadata.drop_all(tables=tables)
-Base.metadata.create_all(tables=tables)
+# Base.metadata.create_all(tables=tables)
