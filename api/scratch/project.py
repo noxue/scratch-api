@@ -15,7 +15,6 @@ router = APIRouter(
 )
 
 
-
 @router.get("/{id}")
 async def get(id: int):
     session = Session()
@@ -46,8 +45,6 @@ async def create(req: Request, title: str = Query(), user=Depends(verify_token))
     finally:
         session.close()
         
-    
-
 
 @router.put("/{id}")
 async def update(id: int, req: Request, title: str = Query(), user=Depends(verify_token)):

@@ -23,7 +23,6 @@ app.add_middleware(
 
 basePath = "./static/"
 
-
 @app.post('/assets/{name}')
 async def create_asset(name: str, req: Request):
 
@@ -58,7 +57,6 @@ async def get_thumbnail(id: int):
 backpackBase = "./backpack/"
 
 packs = {}
-
 
 @app.post('/backpack/{username}')
 async def backpack_admin(username: str, req: Request):
