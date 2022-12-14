@@ -83,7 +83,7 @@ async def create(req: Request, title: str = Query(), user=Depends(verify_token))
         return {"status": 'ok', "content-name": "{}".format(project.id)}
     except Exception as e:
         log.error(e)
-        return {"status": 'error'}
+        return {"status": 'error',"message": e}
     finally:
         session.close()
 
@@ -107,5 +107,27 @@ async def update(id: int, req: Request, title: str = Query(), user=Depends(verif
     except Exception as e:
         log.error(e)
         return {"status": 'error'}
+    finally:
+        session.close()
+
+@router.delete("/{id}")
+async def delete(id: int, user=Depends(verify_token)):
+    session = Session()
+    try:
+        project: Project = session.query(
+            Project).filter(Project.id == id ).one()
+        if project is None:
+            return {"status": 'error', "message": "作品不存在"}
+        
+        if user['user_id']==1 or project.user_id != user['user_id']:
+            return {"status": 'error', "message": "只能删除自己的作品"}
+        
+        session.delete(project)
+        session.commit()
+        
+        return {"status": 'ok'}
+    except Exception as e:
+        log.error(e)
+        return {"status": 'error', "message": "删除失败"}
     finally:
         session.close()
