@@ -15,7 +15,6 @@ router = APIRouter(
 class RegisterUser(BaseModel):
     username: str
     password: str
-    password_confirm: str
 
 
 @router.post("/register")
@@ -30,8 +29,6 @@ async def register(user: RegisterUser):
     if not r.match(user.password):
         return {"status": "error", "message": "密码长度5-50个字符，可包含字母数字以及特殊字符"}
 
-    if user.password != user.password_confirm:
-        return {"status": "error", "message": "两次输入的密码不一致"}
 
     if session.query(User).filter(User.username == user.username).count():
         return {"status": "error", "message": "用户名已存在"}

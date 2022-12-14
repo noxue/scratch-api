@@ -1,6 +1,6 @@
 from time import time
 import bcrypt
-import jwt
+from jose import JWTError, jwt
 from config import JWT_SECRET
 from datetime import datetime, timezone
 from fastapi import Header, HTTPException, Request
@@ -31,11 +31,11 @@ def generate_jwt_token(user_id: int, username: str, expires_in: int = 3600*24*30
     now = int(datetime.now(timezone.utc).timestamp())
     log.debug(now)
 
-    return jwt.encode(payload={'user_id': user_id, 'username': username, 'exp': now + expires_in}, key=JWT_SECRET, algorithm='HS256')
+    return jwt.encode({'user_id': user_id, 'username': username, 'exp': now + expires_in}, key=JWT_SECRET, algorithm='HS256')
 
 
 def decode_jwt_token(token: str) -> dict:
-    return jwt.decode(jwt=token, key=JWT_SECRET, algorithms=["HS256"])
+    return jwt.decode(token, key=JWT_SECRET, algorithms=["HS256"])
 
 
 def verify_token(Authorization: str = Header(), req: Request = None) -> dict | bool:

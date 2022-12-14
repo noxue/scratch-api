@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, File, UploadFile, Request, Response, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -10,16 +11,19 @@ from api import user, scratch
 
 app = FastAPI()
 
-app.include_router(prefix='/api', router=user.router)
-app.include_router(prefix="/api/scratch", router=scratch.project.router)
-
+# 允许跨域
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
+
+app.include_router(prefix='/api', router=user.router)
+app.include_router(prefix="/api/scratch", router=scratch.project.router)
+
+
 
 basePath = "./static/"
 
@@ -35,6 +39,10 @@ async def create_asset(name: str, req: Request):
 
 @app.get('/assets/internalapi/asset/{name}/get')
 async def get_asset(name: str):
+    # 判断文件是否存在
+    if not os.path.exists(basePath + name):
+        return ""
+    
     # 读取文件
     return FileResponse(basePath + name, media_type='application/octet-stream')
 
@@ -51,6 +59,8 @@ async def update_thumbnail(id: int, req: Request):
 
 @app.get('/thumbnail/{id}')
 async def get_thumbnail(id: int):
+    if not os.path.exists(thumbnailBase + '{}.png'.format(id)):
+        return ""
     return FileResponse(thumbnailBase + '{}.png'.format(id), media_type='image/png')
 
 # backpack
