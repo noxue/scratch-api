@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from models.models import User, Project, session
 from api import user, scratch
+from log import log
 
 # item = User(**{'name':'noxue', 'password':'123456'})
 # session.add(item)
@@ -30,11 +31,15 @@ basePath = "./static/"
 @app.post('/assets/{name}')
 async def create_asset(name: str, req: Request):
 
-    # 保存文件
-    with open(basePath + name, 'wb') as f:
-        # 写入文件
-        f.write(await req.body())
-    return {"status": 'ok', "content-name": name}
+    try:
+        # 保存文件
+        with open(basePath + name, 'wb') as f:
+            # 写入文件
+            f.write(await req.body())
+        return {"status": 'ok', "content-name": name}
+    except Exception as e:
+        log.error(e)
+        return "xxxxxx"
 
 
 @app.get('/assets/internalapi/asset/{name}/get')
